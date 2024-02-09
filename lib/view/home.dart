@@ -7,18 +7,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+
   @override
   void initState() {
     catController.initializeApp();
     categories = catController.getAllCategories();
+    fetchData();
     super.initState();
   }
+  void fetchData() {
+    // myKeysList = noteBox.keys.toList();
+    categories = catController.getAllCategories();
+    setState(() {});
+  }
 
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); // adding/editing form key
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  List categories = [];
-  CategoryController catController = CategoryController();
+  final categoryController = TextEditingController();
+  List categories = []; // category list from hive category box
+  CategoryController catController =
+      CategoryController(); //category controller object
+  NotesController notesController = NotesController(); //notes controller object
+  int categoryIndex = 0; // Index of selected category
+  //keys list
+  List myKeysList = [];
+  bool isEditing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   bottomSheet(BuildContext context) {
+    // var fetchdata;
     return showModalBottomSheet(
       backgroundColor: Colors.teal[100],
       shape: OutlineInputBorder(
@@ -51,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       isScrollControlled: true,
       context: context,
       builder: (context) => StatefulBuilder(
+        //nmlk venduna part matram rebuild akam, entire widget tree rebuild akenda
         builder: (context,
                 InsetState) => //Setstate oke avoid akan endo aa(12.15pm of 7.1.24 refer)
             Padding(
@@ -118,23 +135,31 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: List.generate(
                           categories.length + 1,
                           (index) => index == categories.length
-                              ? Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 15,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    " + Add Category",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white),
-                                  ),
-                                )
+                              ? InkWell(
+                            onTap: () => catController.addCategory(
+                                context: context,
+                                categoryController: categoryController,
+                                catController: catController,
+                                fetchData: fetchData,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius:
+                                  BorderRadius.circular(10)),
+                              child: const Text(
+                                " + Add Category",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          )
                               : Container(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 15,
@@ -144,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    'hiiii',
+                                    '...',
                                     style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
